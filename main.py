@@ -30,3 +30,19 @@ print("Data loaded successfully.")
 print(df.head(10)) 
 print(df.info())
 print(df.describe())
+print(df.shape)
+
+
+# ploting daily mean temperature if present
+if "Mean Temp (°C)" in df.columns:
+    ax = df["Mean Temp (°C)"].plot(figsize=(10,4), linewidth=0.6, label="Daily mean (°C)")
+    df["Mean Temp (°C)"].rolling(30, min_periods=15).mean().plot(ax=ax, linewidth=1.2, label="30-day rolling")
+    ax.set_title("Daily Mean Temperature (°C)")
+    ax.set_xlabel("Date"); ax.set_ylabel("Temperature (°C)")
+    ax.grid(True, linewidth=0.3); ax.legend()
+    plt.tight_layout()
+    plt.savefig("first_plot_daily_mean_temp.png")
+    plt.close()
+    print("Saved plot: first_plot_daily_mean_temp.png")
+else:
+    print("Column 'Mean Temp (°C)' not found.")

@@ -19,7 +19,7 @@ def run_project_pipeline(input_dir: str, output_dir: str):
     raw = load_raw_csvs(input_dir)
     clean = clean_daily_dataframe(raw)
 
-
+    
 
 
 

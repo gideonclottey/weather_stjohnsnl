@@ -4,12 +4,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 from data_cleaning import load_raw_csvs, clean_daily_dataframe, save_clean
-
+from eda import descriptive_stats, temperature_skewness, monthly_trend_tests, annual_trend_tests
+from style import apply as apply_style
 
 
 def run_project_pipeline(input_dir: str, output_dir: str):
     out = Path(output_dir)
     (out / "figs").mkdir(parents=True, exist_ok=True)
+    
+    # ploting style
+    apply_style()
+
+    # loading clean data
+    raw = load_raw_csvs(input_dir)
+    clean = clean_daily_dataframe(raw)
+
+
+
+
 
     return {"output_dir": str(out)}
 

@@ -1,0 +1,4 @@
+Daily mean temperature skewness: 0.091503
+Monthly trend — Kendall tau: 0.096480, p=0.237511, Theil–Sen slope (°C/month): 0.053607
+Annual trend — Kendall tau: 0.600000, p=0.136111, Theil–Sen slope (°C/year): 0.307608
+Mann–Kendall on annual mean temp: tau=0.6000, p=0.1361, slope=0.3076 °C/year, 95% CI [-0.1409, 0.7525], trend=no significant trend

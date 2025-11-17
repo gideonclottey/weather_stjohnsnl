@@ -9,6 +9,7 @@ from scipy.stats import kendalltau, theilslopes
 from data_cleaning import load_raw_csvs, clean_daily_dataframe, save_clean
 from eda import descriptive_stats, temperature_skewness, monthly_trend_tests, annual_trend_tests
 from metrics import compute_baseline_anomaly, compute_storm_index, compute_monthly_summary, compute_annual_means
+from sensitivity import extremes_sensitivity
 from style import apply as apply_style
 #from mannkendall import mann_kendall
 
@@ -102,6 +103,10 @@ def run_project_pipeline(input_dir: str, output_dir: str):
             f"95% CI [{mk_result['lcl']:.4f}, {mk_result['ucl']:.4f}], "
             f"trend={mk_result['trend']}\n"
         )
+    
+     #threshold sensitivity table
+    sens = extremes_sensitivity(clean)
+    sens.to_csv(out / "extremes_sensitivity.csv", index=False)
 
     return {"output_dir": str(out)}
 

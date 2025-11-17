@@ -9,6 +9,7 @@ from scipy.stats import kendalltau, theilslopes
 from data_cleaning import load_raw_csvs, clean_daily_dataframe, save_clean
 from eda import descriptive_stats, temperature_skewness, monthly_trend_tests, annual_trend_tests
 from metrics import compute_baseline_anomaly, compute_storm_index, compute_monthly_summary, compute_annual_means
+from correlation import compute_corr, plot_corr_heatmap
 from sensitivity import extremes_sensitivity
 from style import apply as apply_style
 #from mannkendall import mann_kendall
@@ -104,6 +105,13 @@ def run_project_pipeline(input_dir: str, output_dir: str):
             f"trend={mk_result['trend']}\n"
         )
     
+
+     # correlation
+    corr = compute_corr(clean)
+    corr.to_csv(out / "correlation_matrix.csv")
+    plot_corr_heatmap(corr, str(out / "figs" / "corr_heatmap.png"))
+
+
      #threshold sensitivity table
     sens = extremes_sensitivity(clean)
     sens.to_csv(out / "extremes_sensitivity.csv", index=False)

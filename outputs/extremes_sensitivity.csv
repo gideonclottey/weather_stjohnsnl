@@ -1,0 +1,9 @@
+type,percentile,threshold,count
+cold,1,-15.231,21
+cold,2,-13.2,43
+cold,5,-10.5,106
+cold,10,-7.1,209
+heat,90,23.4,212
+heat,95,25.3,106
+heat,98,27.3,43
+heat,99,28.4,22

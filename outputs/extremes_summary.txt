@@ -1,0 +1,2 @@
+Heat extremes (GEV) ~5-year return level Tmax: 40.71 °C
+Cold extremes (GEV) ~5-year return level Tmin: -41.88 °C

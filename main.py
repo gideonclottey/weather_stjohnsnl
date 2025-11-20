@@ -9,10 +9,16 @@ from scipy.stats import kendalltau, theilslopes
 from data_cleaning import load_raw_csvs, clean_daily_dataframe, save_clean
 from eda import descriptive_stats, temperature_skewness, monthly_trend_tests, annual_trend_tests
 from metrics import compute_baseline_anomaly, compute_storm_index, compute_monthly_summary, compute_annual_means
+from extremes import select_extremes, fit_gev_heat, fit_gev_cold, return_level_gev
 from correlation import compute_corr, plot_corr_heatmap
 from sensitivity import extremes_sensitivity
 from style import apply as apply_style
+from plotting_extremes import plot_heat_extremes_hist, plot_cold_extremes_hist
 #from mannkendall import mann_kendall
+from plotting import (
+    plot_daily_tmean, plot_monthly_mean_with_trend, plot_hist_tmean,
+    plot_monthly_precip_intensity, plot_storm_index
+)
 
 
 def mann_kendall(values, alpha=0.05):
@@ -104,13 +110,40 @@ def run_project_pipeline(input_dir: str, output_dir: str):
             f"95% CI [{mk_result['lcl']:.4f}, {mk_result['ucl']:.4f}], "
             f"trend={mk_result['trend']}\n"
         )
-    
+      # extreme value analysis
+    cold, heat = select_extremes(clean, p_low=5.0, p_high=95.0)
+    heat_params = fit_gev_heat(heat)
+    cold_params = fit_gev_cold(cold)
+
+    plot_heat_extremes_hist(heat, heat_params, str(out / "figs" / "heat_extremes_gev.png"))
+    plot_cold_extremes_hist(cold, cold_params, str(out / "figs" / "cold_extremes_gev.png"))
+
+
+     #summary of extremes
+    with open(out / "extremes_summary.txt", "w") as f:
+        if heat_params:
+            rl5 = return_level_gev(*heat_params, T=5*365.25)
+            f.write(f"Heat extremes (GEV) ~5-year return level Tmax: {rl5:.2f} °C\n")
+        else:
+            f.write("Heat extremes: insufficient data for GEV fit.\n")
+        if cold_params:
+            # fit was on negated Tmin; return level for neg domain -> map back with minus sign
+            rl5_neg = return_level_gev(*cold_params, T=5*365.25)
+            f.write(f"Cold extremes (GEV) ~5-year return level Tmin: {-rl5_neg:.2f} °C\n")
+        else:
+            f.write("Cold extremes: insufficient data for GEV fit.\n")
 
      # correlation
     corr = compute_corr(clean)
     corr.to_csv(out / "correlation_matrix.csv")
     plot_corr_heatmap(corr, str(out / "figs" / "corr_heatmap.png"))
 
+      # Plots (core set)
+    plot_daily_tmean(clean, str(out / "figs" / "daily_mean_temp.png"))
+    plot_monthly_mean_with_trend(monthly, str(out / "figs" / "monthly_mean_theilsen.png"))
+    plot_hist_tmean(clean, str(out / "figs" / "hist_tmean.png"))
+    plot_monthly_precip_intensity(monthly, str(out / "figs" / "monthly_precip_intensity.png"))
+    plot_storm_index(clean, str(out / "figs" / "storm_index.png"))
 
      #threshold sensitivity table
     sens = extremes_sensitivity(clean)
